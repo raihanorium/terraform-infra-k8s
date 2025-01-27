@@ -11,3 +11,5 @@ ingress:
     "nginx.ingress.kubernetes.io/force-ssl-redirect": "false"
   #  "nginx.ingress.kubernetes.io/rewrite-target": /$2
   #paths: [/dashboard(/|$)(.*)]
+kong:
+  enabled: false
