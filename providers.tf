@@ -14,7 +14,7 @@ terraform {
 provider "kind" {}
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     config_path = var.kube_config
   }
 }
