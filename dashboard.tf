@@ -9,7 +9,10 @@ resource "helm_release" "kubernetes_dashboard" {
   values = [
     file("./dashboard-values.yaml")
   ]
-  force_update = true
+
+  lifecycle {
+    prevent_destroy = false
+  }
 }
 
 resource "kubernetes_service_account" "dashboard_admin" {
