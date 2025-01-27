@@ -41,7 +41,7 @@ data "kubernetes_secret" "dashboard-admin" {
   depends_on = [kubernetes_cluster_role_binding.dashboard_admin]
 
   metadata {
-    name = kubernetes_cluster_role_binding.dashboard_admin.subject.name
+    name = kubernetes_cluster_role_binding.dashboard_admin.subject[0].name
     namespace  = "kubernetes-dashboard"
   }
 }
