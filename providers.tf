@@ -15,6 +15,6 @@ provider "kind" {}
 
 provider "helm" {
   kubernetes = {
-    config_path = var.kube_config
+    config_path = pathexpand(var.kube_config)
   }
 }

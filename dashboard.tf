@@ -1,4 +1,3 @@
-# Install Kubernetes Dashboard with Ingress
 resource "helm_release" "kubernetes_dashboard" {
   name       = "kubernetes-dashboard"
   repository = "https://kubernetes.github.io/dashboard/"
