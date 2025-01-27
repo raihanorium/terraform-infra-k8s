@@ -8,9 +8,13 @@ terraform {
     helm = {
       source = "hashicorp/helm"
       version = "3.0.0-pre1"
-      kubeconfig = var.kube_config
     }
   }
 }
 provider "kind" {}
-provider "helm" {}
+
+provider "helm" {
+  kubernetes {
+    config_path = var.kube_config
+  }
+}
