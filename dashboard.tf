@@ -16,15 +16,20 @@ resource "helm_release" "kubernetes_dashboard" {
 }
 
 resource "kubernetes_service_account" "dashboard_admin" {
+  depends_on = [helm_release.kubernetes_dashboard]
+
   metadata {
     name      = "dashboard-admin"
     namespace  = "kubernetes-dashboard"
   }
-  depends_on = [kind_cluster.kind-cluster]
+
+  provisioner "local-exec" {
+    command = "sleep 20"
+  }
 }
 
 resource "kubernetes_cluster_role_binding" "dashboard_admin" {
-  depends_on = [kind_cluster.kind-cluster]
+  depends_on = [helm_release.kubernetes_dashboard]
 
   metadata {
     name = "dashboard_admin"

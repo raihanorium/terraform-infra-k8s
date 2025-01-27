@@ -5,6 +5,11 @@ terraform {
       version = "0.7.0"
     }
 
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+      version = "2.35.1"
+    }
+
     helm = {
       source = "hashicorp/helm"
       version = "3.0.0-pre1"
@@ -12,6 +17,10 @@ terraform {
   }
 }
 provider "kind" {}
+
+provider "kubernetes" {
+  config_path = pathexpand(var.kube_config)
+}
 
 provider "helm" {
   kubernetes = {
