@@ -18,7 +18,7 @@ resource "helm_release" "kubernetes_dashboard" {
 resource "kubernetes_service_account" "dashboard_admin" {
   metadata {
     name      = "dashboard-admin"
-    namespace = "kube-system"
+    namespace  = "kubernetes-dashboard"
   }
   depends_on = [kind_cluster.kind-cluster]
 }
@@ -37,7 +37,7 @@ resource "kubernetes_cluster_role_binding" "dashboard_admin" {
   subject {
     kind      = "ServiceAccount"
     name = kubernetes_service_account.dashboard_admin.metadata.0.name
-    namespace = kubernetes_service_account.dashboard_admin.metadata.0.namespace
+    namespace  = "kubernetes-dashboard"
   }
 
   provisioner "local-exec" {
@@ -50,6 +50,6 @@ data "kubernetes_secret" "dashboard-admin" {
 
   metadata {
     name = kubernetes_service_account.dashboard_admin.default_secret_name
-    namespace = kubernetes_service_account.dashboard_admin.metadata.0.namespace
+    namespace  = "kubernetes-dashboard"
   }
 }
