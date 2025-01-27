@@ -14,7 +14,7 @@ resource "kind_cluster" "kind-cluster" {
         "kind: InitConfiguration\nnodeRegistration:\n  kubeletExtraArgs:\n    node-labels: \"ingress-ready=true\"\n"
       ]
       extra_port_mappings {
-        container_port = 80
+        container_port = 8080
         host_port = 8080
       }
       extra_port_mappings {
