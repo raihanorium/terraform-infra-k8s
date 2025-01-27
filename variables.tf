@@ -1,4 +1,4 @@
 variable "kube_config" {
     description = "Path to the kubeconfig file"
-    default = pathexpand("~/.kube/config")
+    default = "~/.kube/config"
 }
