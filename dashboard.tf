@@ -53,7 +53,7 @@ data "kubernetes_secret" "dashboard-admin" {
   depends_on = [kubernetes_service_account.dashboard_admin]
 
   metadata {
-    name = kubernetes_service_account.dashboard_admin.default_secret_name
+    name = kubernetes_service_account.dashboard_admin.metadata.0.name
     namespace  = "kubernetes-dashboard"
   }
 }
