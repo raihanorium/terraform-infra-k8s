@@ -31,7 +31,7 @@ resource "kubernetes_cluster_role_binding" "dashboard_admin" {
   depends_on = [helm_release.kubernetes_dashboard]
 
   metadata {
-    name = "dashboard_admin"
+    name = "dashboard-admin"
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -53,7 +53,7 @@ data "kubernetes_secret" "dashboard-admin" {
   depends_on = [kubernetes_service_account.dashboard_admin]
 
   metadata {
-    name = "dashboard_admin"
+    name = "dashboard-admin"
     namespace  = "kubernetes-dashboard"
   }
 }
