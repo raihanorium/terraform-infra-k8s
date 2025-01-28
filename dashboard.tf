@@ -40,7 +40,7 @@ resource "kubernetes_cluster_role_binding" "dashboard_admin" {
   }
   subject {
     kind      = "ServiceAccount"
-    name = kubernetes_service_account.dashboard_admin.metadata.0.name
+    name = "dashboard-admin"
     namespace  = "kubernetes-dashboard"
   }
 
