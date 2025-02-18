@@ -1,92 +1,35 @@
 ---
 - name: Install Kubernetes on Ubuntu
-  hosts: all
+  hosts: localhost
   become: yes
+
   tasks:
-
-    - name: Disable swap (required for Kubernetes)
-      command: swapoff -a
-
-    - name: Remove swap entry from /etc/fstab
-      replace:
-        path: /etc/fstab
-        regexp: '^(.*swap.*)$'
-        replace: '# \1'
-
-    - name: Install required packages
-      apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg
-          - software-properties-common
-        state: present
-        update_cache: yes
-
-    - name: Add Kubernetes APT key
-      shell: curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-
-    - name: Add Kubernetes repository
-      apt_repository:
-        repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-        state: present
-
     - name: Install Docker
       apt:
         name: docker.io
         state: present
 
-    - name: Enable and start Docker service
-      systemd:
-        name: docker
-        enabled: yes
-        state: started
-
-    - name: Install Kubernetes components
+    - name: Install kubeadm, kubelet, and kubectl
       apt:
-        name:
-          - kubelet
-          - kubeadm
-          - kubectl
+        name: "{{ item }}"
         state: present
-        update_cache: yes
+      loop:
+        - kubeadm
+        - kubelet
+        - kubectl
 
-    - name: Enable and start kubelet
-      systemd:
-        name: kubelet
-        enabled: yes
-        state: started
+    - name: Initialize Kubernetes master
+      command: kubeadm init --pod-network-cidr=10.244.0.0/16
+      register: kubeadm_output
+      ignore_errors: yes
 
-    - name: Initialize Kubernetes master node
-      command: kubeadm init --pod-network-cidr=192.168.1.0/16
-      when: inventory_hostname == "your-ubuntu-ip"
+    - name: Set up kubectl for the current user
+      command: "{{ item }}"
+      with_items:
+        - "mkdir -p $HOME/.kube"
+        - "cp /etc/kubernetes/admin.conf $HOME/.kube/config"
+        - "chown $(id -u):$(id -g) $HOME/.kube/config"
 
-    - name: Create .kube directory
-      file:
-        path: $HOME/.kube
-        state: directory
-        mode: '0755'
-      when: inventory_hostname == "your-ubuntu-ip"
-
-    - name: Copy Kubernetes admin config
-      copy:
-        src: /etc/kubernetes/admin.conf
-        dest: $HOME/.kube/config
-        remote_src: yes
-      when: inventory_hostname == "your-ubuntu-ip"
-
-    - name: Deploy Calico CNI for networking
+    - name: Install Calico network plugin
       command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-      when: inventory_hostname == "your-ubuntu-ip"
-
-    - name: Install Kubernetes Dashboard
-      command: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
-      when: inventory_hostname == "your-ubuntu-ip"
-
-    - name: Expose Kubernetes Dashboard via NodePort
-      command: >
-        kubectl patch svc kubernetes-dashboard -n kubernetes-dashboard 
-        -p '{\"spec\": {\"type\": \"NodePort\", \"ports\": [{\"port\": 443, \"targetPort\": 8443, \"nodePort\": 32000}]}}'
-      when: inventory_hostname == "your-ubuntu-ip"
-
+      when: "'calico' in kubeadm_output.stdout"
