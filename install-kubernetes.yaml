@@ -1,35 +1,86 @@
----
 - name: Install Kubernetes on Ubuntu
   hosts: localhost
   become: yes
 
   tasks:
-    - name: Install Docker
+    - name: Remove conflicting packages
       apt:
-        name: docker.io
-        state: present
+        name: "{{ item }}"
+        state: absent
+        purge: yes
+      loop:
+        - docker.io
+        - docker-doc
+        - docker-compose
+        - containerd
+        - cri-tools
 
-    - name: Install kubeadm, kubelet, and kubectl
+    - name: Install dependencies
       apt:
         name: "{{ item }}"
         state: present
+        update_cache: yes
       loop:
-        - kubeadm
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+        state: present
+        filename: docker-ce
+
+    - name: Install Docker packages
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+
+    - name: Ensure Docker is running and enabled
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    # Continue with Kubernetes installation (kubeadm, kubelet, kubectl)
+    - name: Add Kubernetes APT key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Add Kubernetes repository
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: kubernetes
+
+    - name: Install Kubernetes components
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
         - kubelet
+        - kubeadm
         - kubectl
 
-    - name: Initialize Kubernetes master
-      command: kubeadm init --pod-network-cidr=10.244.0.0/16
-      register: kubeadm_output
-      ignore_errors: yes
+    - name: Disable swap
+      command: swapoff -a
+      when: ansible_swaptotal_mb > 0
 
-    - name: Set up kubectl for the current user
-      command: "{{ item }}"
-      with_items:
-        - "mkdir -p $HOME/.kube"
-        - "cp /etc/kubernetes/admin.conf $HOME/.kube/config"
-        - "chown $(id -u):$(id -g) $HOME/.kube/config"
-
-    - name: Install Calico network plugin
-      command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-      when: "'calico' in kubeadm_output.stdout"
+    - name: Comment swap in /etc/fstab
+      replace:
+        path: /etc/fstab
+        regexp: '^(.*swap.*)$'
+        replace: '#\1'
