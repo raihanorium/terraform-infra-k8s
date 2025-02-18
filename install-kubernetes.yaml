@@ -85,5 +85,8 @@
       when: inventory_hostname == "your-ubuntu-ip"
 
     - name: Expose Kubernetes Dashboard via NodePort
-      command: kubectl patch svc kubernetes-dashboard -n kubernetes-dashboard -p '{"spec": {"type": "NodePort", "ports": [{"port": 443, "targetPort": 8443, "nodePort": 32000}]}}'
+      command: >
+        kubectl patch svc kubernetes-dashboard -n kubernetes-dashboard 
+        -p '{\"spec\": {\"type\": \"NodePort\", \"ports\": [{\"port\": 443, \"targetPort\": 8443, \"nodePort\": 32000}]}}'
       when: inventory_hostname == "your-ubuntu-ip"
+
