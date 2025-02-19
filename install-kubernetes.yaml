@@ -2,6 +2,7 @@
 - name: Install Kubernetes using k3s and k3sup
   hosts: localhost
   become: yes
+  gather_facts: yes
 
   tasks:
     - name: Install dependencies
