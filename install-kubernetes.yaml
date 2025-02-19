@@ -1,5 +1,5 @@
 ---
-- name: Install Kubernetes on Ubuntu
+- name: Install Kubernetes using k3s and k3sup
   hosts: localhost
   become: yes
 
@@ -15,60 +15,20 @@
         - curl
         - software-properties-common
 
-    - name: Add Docker GPG key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-
-    - name: Add Docker repository
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
-        state: present
-        filename: docker-ce
-
-    - name: Install Docker packages
-      apt:
-        name: "{{ item }}"
-      loop:
-        - docker-ce
-        - docker-ce-cli
-        - containerd.io
-
-    - name: Ensure Docker is running and enabled
-      service:
-        name: docker
-        state: started
-        enabled: yes
-
-    - name: Add Kubernetes apt-key
+    - name: Download k3sup
       get_url:
-        url: https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key
-        dest: /etc/apt/keyrings/kubernetes-apt-keyring.asc
-        mode: '0644'
-        force: true
+        url: https://github.com/alexellis/k3sup/releases/download/0.10.0/k3sup
+        dest: /usr/local/bin/k3sup
+        mode: '0755'
 
-    - name: Add Kubernetes' APT repository
-      apt_repository:
-        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /"
-        state: present
-        update_cache: yes
+    - name: Install k3s on master node
+      command: k3sup install --user {{ ansible_user }} --ip {{ ansible_default_ipv4.address }}
 
-    - name: Install Kubernetes components
-      apt:
-        name: "{{ item }}"
-        state: present
-        update_cache: yes
-      loop:
-        - kubelet
-        - kubeadm
-        - kubectl
-
-    - name: Disable swap
-      command: swapoff -a
-      when: ansible_swaptotal_mb > 0
-
-    - name: Comment swap in /etc/fstab
-      replace:
-        path: /etc/fstab
-        regexp: '^(.*swap.*)$'
-        replace: '#\1'
+    - name: Configure kubectl
+      shell: |
+        mkdir -p ~/.kube
+        cp kubeconfig ~/.kube/config
+        export KUBECONFIG=~/.kube/config
+        kubectl get nodes
+      args:
+        chdir: /root/.kube
