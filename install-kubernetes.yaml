@@ -1,20 +1,9 @@
+---
 - name: Install Kubernetes on Ubuntu
   hosts: localhost
   become: yes
 
   tasks:
-    - name: Remove conflicting packages
-      apt:
-        name: "{{ item }}"
-        state: absent
-        purge: yes
-      loop:
-        - docker.io
-        - docker-doc
-        - docker-compose
-        - containerd
-        - cri-tools
-
     - name: Install dependencies
       apt:
         name: "{{ item }}"
@@ -40,8 +29,6 @@
     - name: Install Docker packages
       apt:
         name: "{{ item }}"
-        state: present
-        update_cache: yes
       loop:
         - docker-ce
         - docker-ce-cli
@@ -53,7 +40,6 @@
         state: started
         enabled: yes
 
-    # Continue with Kubernetes installation (kubeadm, kubelet, kubectl)
     - name: Add Kubernetes APT key
       apt_key:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
