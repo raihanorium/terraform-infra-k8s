@@ -47,7 +47,7 @@
 
     - name: Add Kubernetes repository
       apt_repository:
-        repo: deb https://apt.kubernetes.io/ kubernetes-$(lsb_release -sc) main
+        repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ main
         state: present
         filename: kubernetes
 
