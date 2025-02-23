@@ -1,35 +1,32 @@
 ---
-- name: Install Kubernetes using k3s and k3sup
+- name: Install Kubernetes Cluster with k3sup
   hosts: localhost
-  become: yes
-  gather_facts: yes
-
+  become: true
   tasks:
-    - name: Install dependencies
+    - name: Ensure dependencies are installed
       apt:
-        name: "{{ item }}"
+        name:
+          - curl
+          - git
         state: present
         update_cache: yes
-      loop:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - software-properties-common
 
     - name: Download k3sup
       get_url:
-        url: https://github.com/alexellis/k3sup/releases/download/0.10.0/k3sup
+        url: https://github.com/alexellis/k3sup/releases/latest/download/k3sup
         dest: /usr/local/bin/k3sup
         mode: '0755'
 
-    - name: Install k3s on master node
-      command: k3sup install --user {{ ansible_user }} --ip {{ ansible_default_ipv4.address }}
+    - name: Install K3s using k3sup
+      command:
+        cmd: >
+          k3sup install --local \
+          --user roo \
+          --k3s-version v1.31.5+k3s1 \
+          --k3s-extra-args '--disable=traefik --docker --write-kubeconfig-mode=644' \
+          --local-path "{{ ansible_env.HOME }}/.kube/config"
+      register: k3sup_output
 
-    - name: Configure kubectl
-      shell: |
-        mkdir -p ~/.kube
-        cp kubeconfig ~/.kube/config
-        export KUBECONFIG=~/.kube/config
-        kubectl get nodes
-      args:
-        chdir: /root/.kube
+    - name: Display k3sup output
+      debug:
+        var: k3sup_output.stdout_lines
