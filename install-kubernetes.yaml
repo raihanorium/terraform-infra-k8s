@@ -11,11 +11,10 @@
         state: present
         update_cache: yes
 
-    - name: Download k3sup
-      get_url:
-        url: https://github.com/alexellis/k3sup/releases/latest/download/k3sup
-        dest: /usr/local/bin/k3sup
-        mode: '0755'
+    - name: Download and install k3sup
+      shell: |
+        curl -sLS https://get.k3sup.dev | sh
+        sudo install k3sup /usr/local/bin/
 
     - name: Install K3s using k3sup
       command:
