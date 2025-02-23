@@ -1,4 +1,5 @@
 # install dashboard
+kubectl create namespace kubernetes-dashboard
 helm upgrade --install kubernetes-dashboard kubernetes-dashboard \
     --repo https://kubernetes.github.io/dashboard/ \
     --version 7.10.4 \
