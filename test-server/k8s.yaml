@@ -62,7 +62,7 @@ spec:
   #        - kube.ideascale.me
   #      secretName: dashboard-tls
   rules:
-    - host: test.server.me
+    - host: test.server.mega
       http:
         paths:
           - path: /
