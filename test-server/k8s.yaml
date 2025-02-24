@@ -55,15 +55,17 @@ kind: Ingress
 metadata:
   namespace: test-server
   name: test-server
-  annotations:
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
 spec:
   ingressClassName: nginx
+  #  tls:
+  #    - hosts:
+  #        - kube.ideascale.me
+  #      secretName: dashboard-tls
   rules:
-    - host: server.me
+    - host: test.server.me
       http:
         paths:
-          - path: /test
+          - path: /
             pathType: ImplementationSpecific
             backend:
               service:
