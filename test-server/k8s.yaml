@@ -1,0 +1,73 @@
+# namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-server
+
+---
+
+# deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: test-server
+  name: test-server
+  labels:
+    app: test-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-server
+  template:
+    metadata:
+      labels:
+        app: test-server
+    spec:
+      containers:
+        - name: test-server
+          image: raihanorium/test-server:latest
+          ports:
+            - containerPort: 80
+
+---
+
+# service
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: test-server
+  name: test-server
+spec:
+  selector:
+    app: test-server
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+  type: ClusterIP
+
+---
+
+# ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: test-server
+  name: test-server
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: test-server.ideascale.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: test-server
+                port:
+                  number: 8080
+
