@@ -60,10 +60,10 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: test.server.me
+    - host: server.me
       http:
         paths:
-          - path: /
+          - path: /test
             pathType: Prefix
             backend:
               service:
