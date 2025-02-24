@@ -60,7 +60,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: test-server.ideascale.me
+    - host: server.me
       http:
         paths:
           - path: /
