@@ -20,7 +20,7 @@
 
     - name: Add user to Docker group
       user:
-        name: "{{ ansible_user }}"
+        name: "{{ ansible_env.USER }}"
         groups: docker
         append: yes
 
@@ -40,7 +40,7 @@
       command:
         cmd: >
           k3sup install --local \
-          --user {{ ansible_user }} \
+          --user {{ ansible_env.USER }} \
           --k3s-version v1.31.5+k3s1 \
           --k3s-extra-args="--disable=traefik --docker --write-kubeconfig-mode=644" \
           --ssh-key "{{ ansible_env.HOME }}/.ssh/id_ed25519" \
