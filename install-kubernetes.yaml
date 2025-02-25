@@ -2,6 +2,8 @@
 - name: Install Kubernetes Cluster with k3sup
   hosts: localhost
   become: true
+  roles:
+    - andrewrothstein.k3sup
   tasks:
     - name: Ensure dependencies are installed
       apt:
@@ -35,11 +37,6 @@
         url: https://github.com/alexellis/k3sup/releases/download/0.13.8/k3sup
         dest: /usr/local/bin/k3sup
         mode: '0755'
-
-    - name: Install Ansible Galaxy roles
-      command: ansible-galaxy install -r requirements.yaml
-      args:
-        chdir: "{{ playbook_dir }}"
 
     - name: Install K3s using k3sup
       command:
