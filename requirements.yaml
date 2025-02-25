@@ -1,0 +1,4 @@
+---
+roles:
+  - name: vandot.k3sup
+    version: 1.0.0

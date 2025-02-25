@@ -36,6 +36,11 @@
         dest: /usr/local/bin/k3sup
         mode: '0755'
 
+    - name: Install Ansible Galaxy roles
+      command: ansible-galaxy install -r requirements.yaml
+      args:
+        chdir: "{{ playbook_dir }}"
+
     - name: Install K3s using k3sup
       command:
         cmd: >
