@@ -11,11 +11,11 @@
         state: present
         update_cache: yes
 
-    - name: Install kubectl
-      get_url:
-        url: https://dl.k8s.io/release/v1.31.5/bin/linux/amd64/kubectl
-        dest: /usr/local/bin/kubectl
-        mode: '0755'
+#    - name: Install kubectl
+#      get_url:
+#        url: https://dl.k8s.io/release/v1.31.5/bin/linux/amd64/kubectl
+#        dest: /usr/local/bin/kubectl
+#        mode: '0755'
 
     - name: Download k3sup
       get_url:
@@ -29,7 +29,7 @@
           k3sup install --local \
           --user roo \
           --k3s-version v1.31.5+k3s1 \
-          --k3s-extra-args="--disable=traefik --docker --write-kubeconfig-mode=644" \
+          --k3s-extra-args="--disable=traefik --docker --write-kubeconfig-mode=644 --write-kubeconfig-group=$(id -gn)" \
           --local-path "{{ ansible_env.HOME }}/.kube/config"
       register: k3sup_output
 
