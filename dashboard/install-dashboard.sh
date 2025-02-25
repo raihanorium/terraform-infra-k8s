@@ -9,7 +9,7 @@ helm upgrade --install ingress-nginx ingress-nginx \
 kubectl create namespace kubernetes-dashboard
 helm upgrade --install kubernetes-dashboard kubernetes-dashboard \
     --repo https://kubernetes.github.io/dashboard/ \
-    --version 7.10.4 \
+    --version 6.0.8 \
     --namespace kubernetes-dashboard --create-namespace \
     --set "extraArgs={'--enable-skip-login','--enable-insecure-login'},protocolHttp=true,metricsScraper.enabled=true"
   kubectl wait pods -n kubernetes-dashboard -l app.kubernetes.io/name=kubernetes-dashboard --for condition=Ready --timeout=180s >/dev/null 2>&1
