@@ -1,0 +1,41 @@
+# setup k3s
+k3sup install --local \
+    --user "${USER}" \
+    --k3s-version v1.31.5+k3s1 \
+    --k3s-extra-args '--disable=traefik --docker --write-kubeconfig-mode=644' \
+    --local-path "${HOME}/.kube/config"
+
+# install homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# install helm
+brew install helm
+
+# install cert-manager
+helm install cert-manager --namespace cert-manager --version v1.17.1 jetstack/cert-manager
+
+# create issuer
+kubectl apply -f - <<EOF
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: raihan.dk@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+EOF
+
+# install ingress-nginx
+helm upgrade --install ingress-nginx ingress-nginx \
+    --namespace ingress-nginx --create-namespace \
+    --repo https://kubernetes.github.io/ingress-nginx \
+    --set controller.allowSnippetAnnotations=true \
+    --set controller.enableAnnotationValidations=false \
+    --version 4.11.3
