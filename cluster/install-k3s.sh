@@ -5,14 +5,25 @@ k3sup install --local \
     --k3s-extra-args '--disable=traefik --docker --write-kubeconfig-mode=644' \
     --local-path "${HOME}/.kube/config"
 
-# install homebrew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Check if Homebrew is installed, and install it if not
+if ! command -v brew &> /dev/null; then
+    echo "Homebrew not found. Installing..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
 
-# install helm
-brew install helm
+# Check if Helm is installed, and install it if not
+if ! command -v helm &> /dev/null; then
+    echo "Helm not found. Installing..."
+    brew install helm
+else
+    echo "Helm is already installed."
+fi
 
 # install cert-manager
 helm install cert-manager --namespace cert-manager --version v1.17.1 jetstack/cert-manager
+
+
+echo "Helming now..."
 
 # create issuer
 kubectl apply -f - <<EOF
