@@ -53,10 +53,10 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: tls-cert
+  name: test.server.me-tls
   namespace: test-server
 spec:
-  secretName: tls-secret
+  secretName: test.server.me-tls-secret
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
@@ -77,7 +77,7 @@ spec:
   tls:
     - hosts:
         - test.server.me
-      secretName: tls-secret
+      secretName: test.server.me-tls-secret
   rules:
     - host: test.server.me
       http:
