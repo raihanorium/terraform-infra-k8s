@@ -43,7 +43,7 @@ spec:
     app: test-server
   ports:
     - protocol: TCP
-      port: 8080
+      port: 443
       targetPort: 80
   type: ClusterIP
 
@@ -88,5 +88,5 @@ spec:
               service:
                 name: test-server
                 port:
-                  number: 8080
+                  number: 443
 
