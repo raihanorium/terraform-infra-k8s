@@ -20,9 +20,9 @@ else
 fi
 
 # install cert-manager
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.1/cert-manager.crds.yaml
 helm repo add jetstack https://charts.jetstack.io
-helm install cert-manager --namespace cert-manager --create-namespace --version v1.17.1 jetstack/cert-manager
+helm repo update
+helm install cert-manager --namespace cert-manager --create-namespace --version v1.17.1 jetstack/cert-manager --set installCRDs=true
 
 
 echo "Helming now..."
