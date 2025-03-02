@@ -53,16 +53,16 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: test.server.me-tls
+  name: test-server.server.me-tls
   namespace: test-server
 spec:
-  secretName: test.server.me-tls-secret
+  secretName: test-server.server.me-tls-secret
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
-  commonName: test.server.me
+  commonName: test-server.server.me
   dnsNames:
-    - test.server.me
+    - test-server.server.me
 
 ---
 
@@ -76,8 +76,8 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - test.server.me
-      secretName: test.server.me-tls-secret
+        - test-server.server.me
+      secretName: test-server.server.me-tls-secret
   rules:
     - host: test-server.server.me
       http:
